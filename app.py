@@ -1947,7 +1947,8 @@ def render_mode_box(mode, sources, band_keys):
 # ─────────────────────────────────────────────────────────────
 def page_upload(progress):
     st.markdown(
-        "<div class='gs-hero'><h1>Check your field's health from drone images</h1>"
+        "<div class='gs-hero'><h1></h1>"
+        "<h1>Check your field's health from drone images</h1>"
         "<p>Upload a drone photo of the field, plus multispectral bands if you have them. "
         "GreenScan marks the problem areas, suggests what to do and estimates the treatment cost.</p></div>",
         unsafe_allow_html=True,
@@ -2605,7 +2606,8 @@ def page_results():
     meta = st.session_state.meta
     if res is None:
         st.markdown(
-            "<div class='gs-hero'><h1>No report yet</h1>"
+            "<div class='gs-hero'><h1></h1>"
+            "<h1>No report yet</h1>"
             "<p>Upload your field images and run the analysis. The report will appear here.</p></div>",
             unsafe_allow_html=True,
         )
