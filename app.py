@@ -225,6 +225,10 @@ CSS = """
 }
 .block-container { padding-top: 3.2rem; max-width: 1280px; }
 
+/* Hide the Streamlit toolbar, menu and footer badge */
+[data-testid="stToolbar"], [data-testid="stDecoration"], #MainMenu, footer { display: none !important; }
+[data-testid="stHeader"] { background: transparent; }
+
 /* Sidebar brand */
 .gs-brand { display: flex; gap: 12px; align-items: center; padding: 4px 0 8px; }
 .gs-brand-mark {
