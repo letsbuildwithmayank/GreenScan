@@ -1128,7 +1128,8 @@ def priority_of(stat, valid):
 # ─────────────────────────────────────────────────────────────
 # ANALYSIS ENGINE
 # ─────────────────────────────────────────────────────────────
-@st.cache_data(show_spinner=False, max_entries=3)
+# Not cached: it reports progress through Streamlit elements, and the result is
+# kept in session state anyway. Caching it would also double the memory used.
 def run_analysis(rgb_file, band_files, rows, cols, thresholds, crop=(0.0, 0.0, 0.0, 0.0),
                  limit_mode="fixed", percents=(5, 10, 15), plots=None, bare_limit=None,
                  _progress=None):
