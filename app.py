@@ -223,11 +223,14 @@ CSS = """
   letter-spacing: -0.01em;
   color: var(--gs-ink);
 }
-.block-container { padding-top: 3.2rem; max-width: 1280px; }
+.block-container { padding-top: 1.4rem; padding-bottom: 2rem; max-width: 1280px; }
 
-/* Hide the Streamlit toolbar, menu and footer badge */
+/* Hide the Streamlit toolbar, menu and footer badge, and close the gap they leave */
 [data-testid="stToolbar"], [data-testid="stDecoration"], #MainMenu, footer { display: none !important; }
-[data-testid="stHeader"] { background: transparent; }
+[data-testid="stHeader"] { background: transparent; height: 2.6rem; min-height: 0; }
+[data-testid="stSidebarUserContent"] { padding-top: 1rem; }
+[data-testid="stSidebarHeader"] { padding-top: .4rem; padding-bottom: 0; height: auto; min-height: 0; }
+section[data-testid="stSidebar"] > div:first-child { padding-top: .4rem; }
 
 /* Sidebar brand */
 .gs-brand { display: flex; gap: 12px; align-items: center; padding: 4px 0 8px; }
