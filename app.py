@@ -1852,9 +1852,14 @@ class Progress:
         self.slot.markdown(f"<b>{title}</b><div class='gs-check'>{''.join(rows)}</div>",
                            unsafe_allow_html=True)
 
+    def reset(self):
+        """Start the checklist again for a new run."""
+        self.done = 0
+        self.render(running=True, title="Analysing")
+
     def step(self, index):
-        self.done = max(self.done, index)
-        self.render(running=True)
+        self.done = index
+        self.render(running=True, title="Analysing")
 
     def finish(self):
         self.done = len(STAGES)
@@ -1896,8 +1901,16 @@ def render_sidebar():
         progress = Progress(slot)
 
         res = st.session_state.result
-        if res is not None:
+        on_results = st.session_state.nav == NAV_RESULTS
+        if res is not None and on_results:
             progress.finish()
+        else:
+            # back on the upload page: the checklist waits for the next run
+            progress.render(title="Progress")
+            st.caption("Ready for a new analysis." if res is not None
+                       else "Add your images and run the analysis.")
+
+        if res is not None:
             s = res["summary"]
             label, color = score_label(s["score"])
             st.divider()
@@ -1911,9 +1924,6 @@ def render_sidebar():
                 f"Healthy: {s['healthy'] / base * 100:.0f}% of the crop area\n\n"
                 f"Needs attention: {s['attention'] / base * 100:.0f}%"
             )
-        else:
-            progress.render(title="Progress")
-            st.caption("Add your images and run the analysis.")
 
         st.divider()
         st.caption(
@@ -2259,6 +2269,7 @@ def page_upload(progress):
     if run:
         band_tuple = tuple((k, band_files[k][0], band_files[k][1]) for k in BAND_ORDER if k in band_files)
         status = st.status("Working on your field...", expanded=True)
+        progress.reset()
         try:
             res = run_analysis(rgb_file, band_tuple, int(grid_r), int(grid_c),
                                tuple(sorted(thresholds.items())), crop,
@@ -2278,6 +2289,7 @@ def page_upload(progress):
                 st.exception(exc)
             return
         status.update(label="Analysis complete", state="complete", expanded=False)
+        progress.finish()
 
         if kept is None:
             st.session_state.kept_files = {
