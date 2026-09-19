@@ -14,6 +14,7 @@ import hashlib
 import html
 import io
 import json
+import os
 import re
 import textwrap
 from datetime import datetime
@@ -46,8 +47,10 @@ SAMPLE_DIR = APP_DIR / "sample_data"
 IMAGE_TYPES = ["jpg", "jpeg", "png", "tif", "tiff"]
 IMAGE_EXTS = tuple(f".{t}" for t in IMAGE_TYPES)
 
-MAX_PROC_SIDE = 2000      # images are processed at most at this size (memory + speed)
-MAX_DISPLAY_SIDE = 1400   # maps are drawn at most at this size
+# Processing size can be lowered on small servers with GREENSCAN_MAX_SIDE=1200
+MAX_PROC_SIDE = int(os.environ.get("GREENSCAN_MAX_SIDE", 2000))
+MAX_DISPLAY_SIDE = int(os.environ.get("GREENSCAN_DISPLAY_SIDE", 1400))
+SIFT_FEATURES = int(os.environ.get("GREENSCAN_SIFT_FEATURES", 4000))
 DEFAULT_GRID_COLS = 256
 DEFAULT_GRID_ROWS = 192
 SQM_PER_ACRE = 4046.86
@@ -220,7 +223,7 @@ CSS = """
   letter-spacing: -0.01em;
   color: var(--gs-ink);
 }
-.block-container { padding-top: 2rem; max-width: 1280px; }
+.block-container { padding-top: 3.2rem; max-width: 1280px; }
 
 /* Sidebar brand */
 .gs-brand { display: flex; gap: 12px; align-items: center; padding: 4px 0 8px; }
@@ -237,8 +240,9 @@ CSS = """
 .gs-side-score small { font-size: .95rem; color: var(--gs-muted); font-weight: 600; }
 
 /* Page intro */
-.gs-hero { padding: 4px 0 18px; border-bottom: 2px solid var(--gs-ink); margin-bottom: 8px; }
-.gs-hero h1 { font-size: clamp(1.9rem, 3.6vw, 2.8rem); font-weight: 800; line-height: 1.08; margin: 0; padding: 0; }
+.gs-hero { padding: 10px 0 18px; border-bottom: 2px solid var(--gs-ink); margin-bottom: 8px; }
+.gs-hero h1 { font-size: clamp(1.9rem, 3.6vw, 2.8rem); font-weight: 800; line-height: 1.22;
+  margin: 0; padding: 4px 0 0; overflow: visible; }
 .gs-hero p { margin: 8px 0 0; color: var(--gs-muted); max-width: 64ch; font-size: 1.05rem; line-height: 1.5; }
 
 /* Numbered steps (the upload page is a real sequence) */
@@ -272,7 +276,7 @@ CSS = """
 .gs-score small { font-size: 1.2rem; color: var(--gs-muted); font-weight: 600; }
 .gs-score-label { font-weight: 700; font-size: 1.05rem; margin-top: 6px; }
 .gs-score-note { color: var(--gs-muted); font-size: .88rem; }
-.gs-report h2 { margin: 0; padding: 0; font-size: 1.6rem; font-weight: 800; }
+.gs-report h2 { margin: 0; padding: 2px 0 0; font-size: 1.6rem; font-weight: 800; line-height: 1.25; }
 .gs-report-meta { color: var(--gs-muted); margin: 2px 0 14px; font-size: .95rem; }
 .gs-strip { display: flex; height: 38px; border-radius: 6px; overflow: hidden; background: var(--gs-line); }
 .gs-strip span {
@@ -753,7 +757,7 @@ def _ecc(ref_grad, mov_grad, init):
 
 
 def _sift_matches(ref_u8, mov_u8, scale):
-    sift = cv2.SIFT_create(4000)
+    sift = cv2.SIFT_create(SIFT_FEATURES)
     a = cv2.resize(ref_u8, None, fx=scale, fy=scale, interpolation=cv2.INTER_AREA)
     b = cv2.resize(mov_u8, None, fx=scale, fy=scale, interpolation=cv2.INTER_AREA)
     ka, da = sift.detectAndCompute(a, None)
@@ -1947,8 +1951,7 @@ def render_mode_box(mode, sources, band_keys):
 # ─────────────────────────────────────────────────────────────
 def page_upload(progress):
     st.markdown(
-        "<div class='gs-hero'><h1></h1>"
-        "<h1>Check your field's health from drone images</h1>"
+        "<div class='gs-hero'><h1>Check your field's health from drone images</h1>"
         "<p>Upload a drone photo of the field, plus multispectral bands if you have them. "
         "GreenScan marks the problem areas, suggests what to do and estimates the treatment cost.</p></div>",
         unsafe_allow_html=True,
@@ -2606,8 +2609,7 @@ def page_results():
     meta = st.session_state.meta
     if res is None:
         st.markdown(
-            "<div class='gs-hero'><h1></h1>"
-            "<h1>No report yet</h1>"
+            "<div class='gs-hero'><h1>No report yet</h1>"
             "<p>Upload your field images and run the analysis. The report will appear here.</p></div>",
             unsafe_allow_html=True,
         )
