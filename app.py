@@ -223,17 +223,20 @@ CSS = """
   letter-spacing: -0.01em;
   color: var(--gs-ink);
 }
-.block-container { padding-top: 1.4rem; padding-bottom: 2rem; max-width: 1280px; }
+.block-container { padding-top: .6rem; padding-bottom: 2rem; max-width: 1280px; }
 
-/* Hide the Streamlit toolbar, menu and footer badge, and close the gap they leave */
-[data-testid="stToolbar"], [data-testid="stDecoration"], #MainMenu, footer { display: none !important; }
-[data-testid="stHeader"] { background: transparent; height: 2.6rem; min-height: 0; }
-[data-testid="stSidebarUserContent"] { padding-top: 1rem; }
-[data-testid="stSidebarHeader"] { padding-top: .4rem; padding-bottom: 0; height: auto; min-height: 0; }
-section[data-testid="stSidebar"] > div:first-child { padding-top: .4rem; }
+/* Hide the Streamlit menu, deploy button and footer badge.
+   The toolbar itself stays, because it holds the button that reopens the sidebar. */
+#MainMenu, [data-testid="stMainMenu"], [data-testid="stAppDeployButton"],
+[data-testid="stToolbarActions"], [data-testid="stStatusWidget"],
+[data-testid="stDecoration"], footer { display: none !important; }
+[data-testid="stHeader"] { background: transparent; }
+[data-testid="stToolbar"] { background: transparent; }
+[data-testid="stSidebarUserContent"] { padding-top: 0 !important; }
+[data-testid="stSidebarHeader"] { padding: .3rem .5rem 0; height: auto; min-height: 0; }
 
 /* Sidebar brand */
-.gs-brand { display: flex; gap: 12px; align-items: center; padding: 4px 0 8px; }
+.gs-brand { display: flex; gap: 12px; align-items: center; padding: 0 0 8px; margin-top: -.4rem; }
 .gs-brand-mark {
   width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
@@ -247,7 +250,7 @@ section[data-testid="stSidebar"] > div:first-child { padding-top: .4rem; }
 .gs-side-score small { font-size: .95rem; color: var(--gs-muted); font-weight: 600; }
 
 /* Page intro */
-.gs-hero { padding: 10px 0 18px; border-bottom: 2px solid var(--gs-ink); margin-bottom: 8px; }
+.gs-hero { padding: 2px 0 18px; border-bottom: 2px solid var(--gs-ink); margin-bottom: 8px; }
 .gs-hero h1 { font-size: clamp(1.9rem, 3.6vw, 2.8rem); font-weight: 800; line-height: 1.22;
   margin: 0; padding: 4px 0 0; overflow: visible; }
 .gs-hero p { margin: 8px 0 0; color: var(--gs-muted); max-width: 64ch; font-size: 1.05rem; line-height: 1.5; }
